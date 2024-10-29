@@ -10,7 +10,6 @@ public class EurekaServiceApplication {
 
 	public static void main(String[] args) {
 		System.out.println("This is Eureka Server!!");
-		System.out.println("We are working");
 		SpringApplication.run(EurekaServiceApplication.class, args);
 	}
 
