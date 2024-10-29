@@ -1,0 +1,80 @@
+                +---------------------------+
+                |       Client Requests      |
+                +---------------------------+
+                          |
+                          v
+              +--------------------------+
+              |       API Gateway        |
+              | (Routing, Auth, Rate     |
+              | Limiting via Okta JWT)   |
+              +--------------------------+
+                          |
+                          v
+       +-------------------------+-------------------------+
+       |                         |                         |
+       v                         v                         v
++----------------+       +----------------+       +----------------+
+| Onboarding     |       | Payroll        |       | Employee       |
+| Service        |       | Service        |       | Service        |
+| (Spring Boot   |       | (Spring Boot   |       | (Spring Boot   |
+| Microservice)  |       | Microservice)  |       | Microservice)  |
++----------------+       +----------------+       +----------------+
+       |                         |                         |
+       v                         v                         v
++--------------+       +--------------+       +--------------+
+| PostgreSQL   |       | PostgreSQL   |       | PostgreSQL   |
+| Database     |       | Database     |       | Database     |
++--------------+       +--------------+       +--------------+
+                         
+                         +-----------------------------+
+                         |        Service Registry     |
+                         |        (Eureka Server)      |
+                         +-----------------------------+
+                               /          |          \
+                              /           |           \
+                             v            v            v
+                   +--------------+  +--------------+  +--------------+
+                   | Onboarding   |  | Payroll      |  | Employee     |
+                   | Service      |  | Service      |  | Service      |
+                   +--------------+  +--------------+  +--------------+
+
+Additional Components:
+-----------------------
++--------------------------+        +--------------------------+
+| Spring Cloud Config      |        | Circuit Breaker         |
+| (Centralized Config)     |        | (Resilience4J)          |
++--------------------------+        +--------------------------+
+
++--------------------------+        +--------------------------+
+| Distributed Tracing      |        | Logging                 |
+| (Spring Cloud Sleuth,    |        | (Built-in with Spring   |
+| Zipkin)                  |        | Boot)                   |
++--------------------------+        +--------------------------+
+
++--------------------------+        +--------------------------+
+| RabbitMQ (Async Comm)    |        | Redis (Caching Layer)   |
++--------------------------+        +--------------------------+
+
++--------------------------+        +--------------------------+
+| Role-Based Access        |        | Testing (JUnit, Mockito)|
+| Control (Spring Security)|        +--------------------------+
+| (JWT + Okta)             |
++--------------------------+
+
++--------------------------+        +--------------------------+
+| API Documentation        |        | CI/CD Pipeline          |
+| (OpenAPI/Swagger)        |        | (GitHub Actions)        |
++--------------------------+        +--------------------------+
+
+Workflow:
+---------
+1. Client sends a request -> API Gateway (handles authentication, rate limiting, routing).
+2. API Gateway forwards the request to the appropriate microservice (Onboarding, Payroll, Employee).
+3. Each microservice communicates with its respective PostgreSQL database.
+4. Microservices use Eureka for dynamic service discovery.
+5. Configurations are managed centrally using Spring Cloud Config.
+6. RabbitMQ is used for asynchronous events, Redis for caching frequently accessed data.
+7. Distributed tracing tracks requests across services.
+8. Logs are maintained using Spring Boot’s logging.
+9. Role-based access control restricts access based on user roles.
+10. CI/CD pipeline automates testing and deployment using GitHub Actions.
